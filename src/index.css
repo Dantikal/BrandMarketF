@@ -1,0 +1,232 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --dust:        #F2E8DF;
+  --dust-light:  #FAF4EF;
+  --dust-dark:   #E8D9CC;
+  --saffron:     #C8873A;
+  --saffron-deep:#A86E28;
+  --saffron-soft:#E8A856;
+  --choco:       #2C1A0E;
+  --choco-mid:   #5C3D22;
+  --choco-light: #9C7A5A;
+  --cream:       #FFF8F0;
+  --warm-white:  #FFFCF8;
+  --border:      #DDD0C0;
+  --border-dark: #C4B09A;
+  --font-display:'Playfair Display', Georgia, serif;
+  --font-body:   'DM Sans', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--dust-light);
+  color: var(--choco);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--dust); }
+::-webkit-scrollbar-thumb { background: var(--border-dark); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--saffron); }
+::selection { background: var(--saffron); color: var(--cream); }
+
+#root { animation: pageFadeIn 0.4s ease-out; }
+
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.feed-container {
+  height: 100dvh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.feed-item {
+  height: 100dvh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  position: relative;
+}
+
+.card {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.card:hover {
+  box-shadow: 0 8px 32px rgba(44, 26, 14, 0.12);
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background: var(--saffron);
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  padding: 0.625rem 1.5rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+.btn-primary:hover {
+  background: var(--saffron-deep);
+  box-shadow: 0 4px 16px rgba(200, 135, 58, 0.35);
+  transform: translateY(-1px);
+}
+.btn-primary:active { transform: translateY(0); box-shadow: none; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--choco);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.875rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-dark);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.btn-ghost:hover { background: var(--dust-dark); border-color: var(--saffron); }
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s;
+  color: var(--choco);
+}
+.btn-icon:hover { background: var(--dust-dark); }
+
+.input {
+  width: 100%;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--choco);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input::placeholder { color: var(--choco-light); }
+.input:focus {
+  border-color: var(--saffron);
+  box-shadow: 0 0 0 3px rgba(200, 135, 58, 0.15);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.badge-saffron {
+  background: rgba(200, 135, 58, 0.15);
+  color: var(--saffron-deep);
+}
+
+.font-display { font-family: var(--font-display); }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes heartPop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.4); }
+  70%  { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+.animate-slide-up { animation: slideUp 0.4s ease-out forwards; }
+.animate-fade-in  { animation: fadeIn 0.3s ease-out forwards; }
+.animate-heart    { animation: heartPop 0.35s ease-out forwards; }
+
+/* ─── Mobile Responsive ──────────────────────────────────────────────── */
+
+/* Navbar mobile */
+@media (max-width: 640px) {
+  /* Hide text search on mobile, show icon only */
+  .navbar-search { display: none; }
+
+  /* Stack profile section */
+  .navbar-actions { gap: 6px; }
+
+  /* Full width pages */
+  main > div { padding-left: 16px !important; padding-right: 16px !important; }
+
+  /* Cards go full width */
+  .card { border-radius: 12px; }
+
+  /* Feed card full width on mobile */
+  .feed-item > div[style] { width: 96vw !important; height: 91vh !important; border-radius: 16px !important; }
+
+  /* Grids become 1 col */
+  .grid-auto { grid-template-columns: 1fr !important; }
+
+  /* Kanban horizontal scroll */
+  .kanban-board { overflow-x: auto; }
+}
+
+@media (max-width: 768px) {
+  /* Product page: stack columns */
+  .product-grid { grid-template-columns: 1fr !important; }
+
+  /* Profile header: stack */
+  .profile-header { flex-direction: column; align-items: flex-start !important; }
+
+  /* Brand page grid */
+  .brand-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important; }
+
+  /* Kanban: show 2 columns */
+  .kanban-board > div { min-width: 180px !important; }
+
+  /* 3D editor: stack */
+  .editor-grid { grid-template-columns: 1fr !important; }
+  .editor-sticky { position: static !important; height: 360px !important; margin-bottom: 24px; }
+}
+
+/* Touch improvements */
+@media (hover: none) {
+  .card:hover { transform: none; box-shadow: none; }
+  .btn-primary:hover { transform: none; }
+}
+
+/* Smooth on iOS */
+.feed-container {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Safe area for notch phones */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .feed-container { padding-bottom: env(safe-area-inset-bottom); }
+}
