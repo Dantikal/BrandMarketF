@@ -1,6 +1,6 @@
-import { useState, useRef, Suspense } from 'react'
+import { useState, useRef, Suspense, useMemo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { OrbitControls, Environment } from '@react-three/drei'
+import { OrbitControls, Environment, useGLTF, Center } from '@react-three/drei'
 import * as THREE from 'three'
 import { useNavigate } from 'react-router-dom'
 import { brandApi } from '../../api/services'
@@ -13,6 +13,42 @@ type ClothingType = 'hoodie' | 'pants' | 'tshirt'
 type Step = 0 | 1 | 2
 
 // ─── 3D Models ────────────────────────────────────────────────────────────────
+// Real GLB model for pants, programmatic primitives for tshirt/hoodie
+
+function PantsModel({ bodyColor }: { bodyColor: string }) {
+  const ref = useRef<THREE.Group>(null)
+  const { scene } = useGLTF('/models/clothing.glb')
+
+  const clonedScene = useMemo(() => {
+    const clone = scene.clone(true)
+    clone.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh
+        mesh.material = new THREE.MeshStandardMaterial({
+          color: new THREE.Color(bodyColor),
+          roughness: 0.82,
+          metalness: 0.04,
+        })
+        mesh.castShadow = true
+        mesh.receiveShadow = true
+      }
+    })
+    return clone
+  }, [scene, bodyColor])
+
+  useFrame((_, d) => { if (ref.current) ref.current.rotation.y += d * 0.25 })
+
+  return (
+    <Center>
+      <group ref={ref} scale={0.025}>
+        <primitive object={clonedScene} />
+      </group>
+    </Center>
+  )
+}
+
+useGLTF.preload('/models/clothing.glb')
+
 function HoodieModel({ bodyColor }: { bodyColor: string }) {
   const ref = useRef<THREE.Group>(null)
   useFrame((_, d) => { if (ref.current) ref.current.rotation.y += d * 0.25 })
@@ -30,30 +66,37 @@ function HoodieModel({ bodyColor }: { bodyColor: string }) {
 
 function TshirtModel({ bodyColor }: { bodyColor: string }) {
   const ref = useRef<THREE.Group>(null)
+  const { scene } = useGLTF('/models/tshirt.glb')
+
+  const clonedScene = useMemo(() => {
+    const clone = scene.clone(true)
+    clone.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh
+        mesh.material = new THREE.MeshStandardMaterial({
+          color: new THREE.Color(bodyColor),
+          roughness: 0.85,
+          metalness: 0.04,
+        })
+        mesh.castShadow = true
+        mesh.receiveShadow = true
+      }
+    })
+    return clone
+  }, [scene, bodyColor])
+
   useFrame((_, d) => { if (ref.current) ref.current.rotation.y += d * 0.25 })
-  const mat = new THREE.MeshStandardMaterial({ color: new THREE.Color(bodyColor), roughness: 0.85 })
+
   return (
-    <group ref={ref} position={[0, -0.4, 0]}>
-      <mesh castShadow material={mat}><capsuleGeometry args={[0.52, 1.0, 8, 16]} /></mesh>
-      <mesh castShadow material={mat} position={[-0.78, 0.25, 0]} rotation={[0, 0, Math.PI / 4]}><capsuleGeometry args={[0.18, 0.5, 6, 12]} /></mesh>
-      <mesh castShadow material={mat} position={[0.78, 0.25, 0]} rotation={[0, 0, -Math.PI / 4]}><capsuleGeometry args={[0.18, 0.5, 6, 12]} /></mesh>
-      <mesh material={new THREE.MeshStandardMaterial({ color: new THREE.Color(bodyColor).multiplyScalar(0.75), roughness: 0.9 })} position={[0, 0.62, 0]}><torusGeometry args={[0.18, 0.06, 8, 20]} /></mesh>
-    </group>
+    <Center>
+      <group ref={ref} scale={0.004}>
+        <primitive object={clonedScene} />
+      </group>
+    </Center>
   )
 }
 
-function PantsModel({ bodyColor }: { bodyColor: string }) {
-  const ref = useRef<THREE.Group>(null)
-  useFrame((_, d) => { if (ref.current) ref.current.rotation.y += d * 0.25 })
-  const mat = new THREE.MeshStandardMaterial({ color: new THREE.Color(bodyColor), roughness: 0.88 })
-  return (
-    <group ref={ref} position={[0, -0.2, 0]}>
-      <mesh material={mat} position={[0, 0.55, 0]}><cylinderGeometry args={[0.52, 0.5, 0.3, 16]} /></mesh>
-      <mesh castShadow material={mat} position={[-0.27, -0.35, 0]}><capsuleGeometry args={[0.23, 1.1, 6, 12]} /></mesh>
-      <mesh castShadow material={mat} position={[0.27, -0.35, 0]}><capsuleGeometry args={[0.23, 1.1, 6, 12]} /></mesh>
-    </group>
-  )
-}
+useGLTF.preload('/models/tshirt.glb')
 
 function Scene3D({ type, color }: { type: ClothingType; color: string }) {
   return (
@@ -62,9 +105,9 @@ function Scene3D({ type, color }: { type: ClothingType; color: string }) {
       <directionalLight position={[4, 6, 4]} intensity={1.4} castShadow />
       <directionalLight position={[-3, 2, -2]} intensity={0.4} color="#E8A856" />
       <Suspense fallback={null}>
+        {type === 'pants' && <PantsModel bodyColor={color} />}
         {type === 'hoodie' && <HoodieModel bodyColor={color} />}
         {type === 'tshirt' && <TshirtModel bodyColor={color} />}
-        {type === 'pants' && <PantsModel bodyColor={color} />}
         <Environment preset="sunset" />
       </Suspense>
       <OrbitControls enablePan={false} minDistance={2} maxDistance={6} minPolarAngle={Math.PI / 6} maxPolarAngle={Math.PI * 0.8} />
